@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+<h:head>
+    <title>Asynchronous CSV Download</title>
+</h:head>
+<h:body>
+    <h:form id="csvForm">
+        <h:commandButton value="Download CSV" type="button" onclick="downloadCsv()" />
+       <script type="text/javascript">
+       function downloadCsv() {
+    	    fetch('http://localhost:8080/api/download-csv')
+    	        .then(response => {
+    	            if (!response.ok) {
+    	                throw new Error('Network response was not ok');
+    	            }
+    	            return response.blob(); // Get the response as a Blob
+    	        })
+    	        .then(blob => {
+    	            // Create a temporary link to trigger the download
+    	            const url = window.URL.createObjectURL(blob);
+    	            const a = document.createElement('a');
+    	            a.href = url;
+    	            a.download = 'data.csv'; // The name of the downloaded file
+    	            document.body.appendChild(a);
+    	            a.click();
+    	            document.body.removeChild(a);
+    	            window.URL.revokeObjectURL(url); // Clean up the object URL
+    	        })
+    	        .catch(error => {
+    	            console.error('There was a problem with the fetch operation:', error);
+    	        });
+    	}
+       </script>
+    </h:form>
+</h:body>
+</html>
